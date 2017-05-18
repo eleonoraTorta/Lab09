@@ -153,7 +153,7 @@ public class Collegamento extends DefaultWeightedEdge{
 		//calcolo la distanza tra le due stazioni
 		double distanza = LatLngTool.distance(partenza.getCoords(), arrivo.getCoords(), LengthUnit.KILOMETER);
 		
-		//calcolo peso
+		//calcolo peso (cioe il tempo)
 		 peso = distanza/ velocita;
 		 peso = peso*(3600);
 	

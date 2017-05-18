@@ -5,9 +5,11 @@
 package it.polito.tdp.metrodeparis;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import it.polito.tdp.metrodeparis.model.Collegamento;
 import it.polito.tdp.metrodeparis.model.Fermata;
 import it.polito.tdp.metrodeparis.model.Model;
 import javafx.event.ActionEvent;
@@ -46,16 +48,24 @@ public class MetroDeParisController {
     	
     	if(partenza == null || arrivo == null){
     		txtResult.appendText("Errore: devi selezionare una stazione di partenza e una di arrivo\n");
+    		return;
     	}
-    	Set <Fermata> percorso = model.calcolaCamminoMinimo(partenza, arrivo);
+    	if(partenza.equals(arrivo)){
+    		txtResult.appendText("Inserire una stazione di arrivo DIVERSA da quella di partenza\n");
+    		return;
+    	}
+    	
+    	List <Fermata> percorso = model.calcolaPercorsoMinimo(partenza, arrivo);
+    	double tempoInSecondi = model.getTempoInSecondi();
     	
     	txtResult.appendText("Il percorso e` il seguente:\n\n");
     	
-    	for(Fermata f : percorso){
-    		txtResult.appendText(f.toString() + "\n");
+    	for (Fermata f : percorso) {
+    		txtResult.appendText(f.getNome() +"\n");
+    	
     	}
     	
-    	txtResult.appendText("\nIl tempo di percorrenza stimato e` : " + model.getDurata() +"\n" );
+    	txtResult.appendText("\nIl tempo di percorrenza stimato e` : " + model.getTempoTotale(tempoInSecondi) +"\n" );
 
     }
 
@@ -70,9 +80,14 @@ public class MetroDeParisController {
 
 	public void setModel(Model model) {
 		this.model = model;
-		
-		cmbPartenza.getItems().addAll(model.getFermate());
-		cmbArrivo.getItems().addAll(model.getFermate());
+		try{
+			cmbPartenza.getItems().addAll(model.getFermate());
+			cmbArrivo.getItems().addAll(model.getFermate());
+			model.creaGrafo();
+			
+		}catch (RuntimeException e){
+			txtResult.setText(e.getMessage());
+		}
 		
 	}
 }
